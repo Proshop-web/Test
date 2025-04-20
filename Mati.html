@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel Admina – bezpieczni</title>
+  <title>Panel Admina – Bezpieczni</title>
   <style>
     body { font-family: sans-serif; background: #111; color: #eee; padding: 2rem; }
     h1, h2 { text-align: center; }
@@ -22,10 +22,14 @@
       cursor: pointer;
     }
     button:hover { background: #2d863a; }
-    pre { background: #222; padding: 1rem; border-radius: 6px; overflow-x: auto; }
-    .news-entry { border: 1px solid #3fa34d; border-radius: 4px; padding: 1rem; margin: 1rem 0; background: #1a1a1a; }
-    .news-entry button { background: #8b0000; margin-top: 0.5rem; }
+    .entry { border: 1px solid #3fa34d; border-radius: 4px; padding: 1rem; margin: 1rem 0; background: #1a1a1a; }
+    .entry button { background: #8b0000; margin-top: 0.5rem; }
     #update-info { margin-top: 2rem; color: #aaa; font-size: 0.9rem; text-align: center; }
+    .tabs { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+    .tabs button { background: #333; border: none; padding: 0.5rem 1rem; color: #fff; border-radius: 4px; cursor: pointer; }
+    .tabs button.active { background: #3fa34d; }
+    .tab { display: none; }
+    .tab.active { display: block; }
   </style>
 </head>
 <body>
@@ -36,113 +40,125 @@
   </div>
 
   <div id="panel" style="display:none;">
-    <h1>🛡️ Panel Admina – Dodaj ręcznie news</h1>
+    <h1>🛡️ Panel Admina – Bezpieczni</h1>
 
-    <label for="title">✏️ Tytuł artykułu</label>
-    <input type="text" id="title" placeholder="Wpisz tytuł..." />
+    <div class="tabs">
+      <button onclick="switchTab('newsy')" class="active">Newsy</button>
+      <button onclick="switchTab('wydarzenia')">Wydarzenia</button>
+      <button onclick="switchTab('raporty')">Raporty</button>
+    </div>
 
-    <label for="url">🔗 Link do artykułu</label>
-    <input type="url" id="url" placeholder="Wklej link..." />
+    <div id="newsy" class="tab active">
+      <h2>📰 Dodaj news</h2>
+      <label>Tytuł</label><input id="title-news" />
+      <label>Link</label><input id="link-news" />
+      <label>Źródło</label><input id="source-news" />
+      <label>Opis</label><textarea id="desc-news"></textarea>
+      <label>Data</label><input type="date" id="date-news" />
+      <button onclick="dodaj('news')">✅ Dodaj</button>
+      <button onclick="pobierz('news')">📥 Pobierz newsy.json</button>
+      <div id="lista-news"></div>
+    </div>
 
-    <label for="source">📌 Źródło</label>
-    <input type="text" id="source" placeholder="np. Zaufana Trzecia Strona" />
+    <div id="wydarzenia" class="tab">
+      <h2>📅 Dodaj wydarzenie</h2>
+      <label>Tytuł</label><input id="title-event" />
+      <label>Data</label><input type="date" id="date-event" />
+      <label>Miejsce</label><input id="location-event" />
+      <label>Opis</label><textarea id="desc-event"></textarea>
+      <label>Link</label><input id="link-event" />
+      <button onclick="dodaj('event')">✅ Dodaj</button>
+      <button onclick="pobierz('event')">📥 Pobierz events.json</button>
+      <div id="lista-events"></div>
+    </div>
 
-    <label for="description">📝 Opis / streszczenie</label>
-    <textarea id="description" rows="4" placeholder="Dodaj krótki opis..."></textarea>
-
-    <label for="date">📅 Data</label>
-    <input type="date" id="date" />
-
-    <button onclick="dodajNewsa()">✅ Dodaj do listy</button>
-    <button onclick="pobierzJSON()">📥 Pobierz news.json</button>
-
-    <h2>📃 Aktualna lista newsów:</h2>
-    <div id="lista-newsow"></div>
-
-    <hr style="margin: 2rem 0;">
-    <h2>📡 Aktualizacja newsów</h2>
-    <button onclick="wymusLadowanie()">🔄 Załaduj newsy teraz</button>
-    <div id="update-info"></div>
+    <div id="raporty" class="tab">
+      <h2>📊 Dodaj raport</h2>
+      <label>Tytuł</label><input id="title-report" />
+      <label>Data</label><input type="date" id="date-report" />
+      <label>Źródło</label><input id="source-report" />
+      <label>Opis</label><textarea id="desc-report"></textarea>
+      <label>Link</label><input id="link-report" />
+      <button onclick="dodaj('report')">✅ Dodaj</button>
+      <button onclick="pobierz('report')">📥 Pobierz reports.json</button>
+      <div id="lista-reports"></div>
+    </div>
   </div>
 
   <script>
-    let newsy = [];
+    const dane = {
+      news: [],
+      event: [],
+      report: []
+    };
 
     function checkPassword() {
-      const pass = document.getElementById("pass").value;
-      if (pass === "shoppro") {
+      if (document.getElementById("pass").value === "shoppro") {
         document.getElementById("login").style.display = "none";
         document.getElementById("panel").style.display = "block";
-        pokazInfo();
-      } else {
-        alert("Błędne hasło");
+      } else alert("Błędne hasło");
+    }
+
+    function switchTab(id) {
+      document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.tabs button[onclick*='${id}']`).classList.add('active');
+      document.getElementById(id).classList.add('active');
+    }
+
+    function dodaj(type) {
+      let entry;
+      if (type === 'news') {
+        entry = {
+          title: document.getElementById("title-news").value,
+          link: document.getElementById("link-news").value,
+          source: document.getElementById("source-news").value,
+          description: document.getElementById("desc-news").value,
+          date: document.getElementById("date-news").value
+        };
+      } else if (type === 'event') {
+        entry = {
+          title: document.getElementById("title-event").value,
+          date: document.getElementById("date-event").value,
+          location: document.getElementById("location-event").value,
+          description: document.getElementById("desc-event").value,
+          link: document.getElementById("link-event").value
+        };
+      } else if (type === 'report') {
+        entry = {
+          title: document.getElementById("title-report").value,
+          date: document.getElementById("date-report").value,
+          source: document.getElementById("source-report").value,
+          description: document.getElementById("desc-report").value,
+          link: document.getElementById("link-report").value
+        };
       }
+      dane[type].push(entry);
+      aktualizujListe(type);
     }
 
-    function dodajNewsa() {
-      const title = document.getElementById("title").value;
-      const url = document.getElementById("url").value;
-      const source = document.getElementById("source").value;
-      const description = document.getElementById("description").value;
-      const date = document.getElementById("date").value;
-
-      const nowyNews = { title, link: url, source, date, description };
-      newsy.push(nowyNews);
-      aktualizujListe();
-
-      document.getElementById("title").value = "";
-      document.getElementById("url").value = "";
-      document.getElementById("source").value = "";
-      document.getElementById("description").value = "";
-      document.getElementById("date").value = "";
-    }
-
-    function aktualizujListe() {
-      const container = document.getElementById("lista-newsow");
-      container.innerHTML = "";
-
-      newsy.forEach((news, index) => {
+    function aktualizujListe(type) {
+      const lista = document.getElementById(`lista-${type}s`);
+      lista.innerHTML = "";
+      dane[type].forEach((el, i) => {
         const div = document.createElement("div");
-        div.className = "news-entry";
-        div.innerHTML = `
-          <strong>${news.title}</strong><br />
-          <em>${news.source} | ${news.date}</em><br />
-          <p>${news.description}</p>
-          <button onclick="usunNewsa(${index})">Usuń</button>
-        `;
-        container.appendChild(div);
+        div.className = "entry";
+        div.innerHTML = `<strong>${el.title}</strong><br/><em>${el.date || ''}</em><p>${el.description || ''}</p><button onclick="usun('${type}', ${i})">Usuń</button>`;
+        lista.appendChild(div);
       });
     }
 
-    function usunNewsa(index) {
-      newsy.splice(index, 1);
-      aktualizujListe();
+    function usun(type, index) {
+      dane[type].splice(index, 1);
+      aktualizujListe(type);
     }
 
-    function pobierzJSON() {
-      const blob = new Blob([JSON.stringify(newsy, null, 2)], { type: "application/json" });
+    function pobierz(type) {
+      const blob = new Blob([JSON.stringify(dane[type], null, 2)], { type: "application/json" });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = "news.json";
+      link.download = `${type === 'news' ? 'newsy' : type + 's'}.json`;
       link.click();
-    }
-
-    function wymusLadowanie() {
-      const teraz = new Date();
-      localStorage.setItem("lastNewsLoad", teraz.toISOString());
-      pokazInfo();
-      alert("🟢 Oznaczono ręczne załadowanie newsów. Odśwież stronę główną, aby zobaczyć efekt.");
-    }
-
-    function pokazInfo() {
-      const zapis = localStorage.getItem("lastNewsLoad");
-      const info = document.getElementById("update-info");
-      if (zapis) {
-        const data = new Date(zapis);
-        info.textContent = `🕒 Ostatnia aktualizacja newsów: ${data.toLocaleString("pl-PL")}`;
-      } else {
-        info.textContent = "🕒 Brak danych o ostatniej aktualizacji.";
-      }
     }
   </script>
 </body>
