@@ -25,6 +25,7 @@
     pre { background: #222; padding: 1rem; border-radius: 6px; overflow-x: auto; }
     .news-entry { border: 1px solid #3fa34d; border-radius: 4px; padding: 1rem; margin: 1rem 0; background: #1a1a1a; }
     .news-entry button { background: #8b0000; margin-top: 0.5rem; }
+    #update-info { margin-top: 2rem; color: #aaa; font-size: 0.9rem; text-align: center; }
   </style>
 </head>
 <body>
@@ -57,6 +58,11 @@
 
     <h2>📃 Aktualna lista newsów:</h2>
     <div id="lista-newsow"></div>
+
+    <hr style="margin: 2rem 0;">
+    <h2>📡 Aktualizacja newsów</h2>
+    <button onclick="wymusLadowanie()">🔄 Załaduj newsy teraz</button>
+    <div id="update-info"></div>
   </div>
 
   <script>
@@ -67,6 +73,7 @@
       if (pass === "shoppro") {
         document.getElementById("login").style.display = "none";
         document.getElementById("panel").style.display = "block";
+        pokazInfo();
       } else {
         alert("Błędne hasło");
       }
@@ -118,6 +125,24 @@
       link.href = URL.createObjectURL(blob);
       link.download = "news.json";
       link.click();
+    }
+
+    function wymusLadowanie() {
+      const teraz = new Date();
+      localStorage.setItem("lastNewsLoad", teraz.toISOString());
+      pokazInfo();
+      alert("🟢 Oznaczono ręczne załadowanie newsów. Odśwież stronę główną, aby zobaczyć efekt.");
+    }
+
+    function pokazInfo() {
+      const zapis = localStorage.getItem("lastNewsLoad");
+      const info = document.getElementById("update-info");
+      if (zapis) {
+        const data = new Date(zapis);
+        info.textContent = `🕒 Ostatnia aktualizacja newsów: ${data.toLocaleString("pl-PL")}`;
+      } else {
+        info.textContent = "🕒 Brak danych o ostatniej aktualizacji.";
+      }
     }
   </script>
 </body>
