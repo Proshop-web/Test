@@ -1,39 +1,32 @@
-// Uniwersalny main.js dla wszystkich podstron
+// main.js – uniwersalny skrypt do ładowania danych z JSON dla newsów, wydarzeń i raportów
 
 const path = window.location.pathname;
 
-if (path.includes("newsy")) fetchnewsy();
+if (path.includes("newsy")) fetchNewsy();
 if (path.includes("events")) fetchEvents();
 if (path.includes("reports")) fetchReports();
 
-function fetchnewsy() {
-  const lastLoad = localStorage.getItem("lastnewsyLoad");
-  const now = new Date();
-  const todayAtFour = new Date();
-  todayAtFour.setHours(4, 0, 0, 0);
-
-  if (!lastLoad || new Date(lastLoad).toDateString() !== now.toDateString() || now > todayAtFour && new Date(lastLoad) < todayAtFour) {
-    fetch('data/newsy.json')
-      .then(response => response.json())
-      .then(newsy => {
-        const container = document.getElementById("newsy-container");
-        if (!container) return;
-        container.innerHTML = "";
-        newsy.forEach(item => {
-          const card = document.createElement("div");
-          card.className = "newsy-card";
-          card.innerHTML = `
-            <h2>${item.title}</h2>
-            <p><strong>Źródło:</strong> ${item.source} | <strong>Data:</strong> ${item.date}</p>
-            ${item.description ? `<p>${item.description}</p>` : ""}
-            <a href="${item.link}" target="_blank">Czytaj więcej</a>
-          `;
-          container.appendChild(card);
-        });
-        localStorage.setItem("lastnewsyLoad", now.toISOString());
-      })
-      .catch(error => console.error("Błąd podczas wczytywania newsyów:", error));
-  }
+function fetchNewsy() {
+  console.log("Ładowanie newsów...");
+  fetch("data/newsy.json")
+    .then(res => res.json())
+    .then(news => {
+      const container = document.getElementById("news-container");
+      if (!container) return;
+      container.innerHTML = "";
+      news.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "news-card";
+        card.innerHTML = `
+          <h2>${item.title}</h2>
+          <p><strong>Źródło:</strong> ${item.source} | <strong>Data:</strong> ${item.date}</p>
+          ${item.description ? `<p>${item.description}</p>` : ""}
+          <a href="${item.link}" target="_blank">Czytaj więcej</a>
+        `;
+        container.appendChild(card);
+      });
+    })
+    .catch(error => console.error("Błąd podczas ładowania newsów:", error));
 }
 
 function fetchEvents() {
@@ -47,7 +40,7 @@ function fetchEvents() {
 
   label.textContent = `${miesiacePL[aktualnyMiesiac]} ${aktualnyRok}`;
 
-  fetch('data/events.json')
+  fetch("data/events.json")
     .then(res => res.json())
     .then(events => {
       lista.innerHTML = "";
@@ -65,18 +58,19 @@ function fetchEvents() {
         `;
         lista.appendChild(box);
       });
-    });
+    })
+    .catch(error => console.error("Błąd podczas ładowania wydarzeń:", error));
 }
 
 function fetchReports() {
-  const container = document.getElementById("raporty-container");
-  if (!container) return;
-
-  fetch('data/reports.json')
+  console.log("Ładowanie raportów...");
+  fetch("data/reports.json")
     .then(res => res.json())
-    .then(raporty => {
+    .then(reports => {
+      const container = document.getElementById("raporty-container");
+      if (!container) return;
       container.innerHTML = "";
-      raporty.forEach(r => {
+      reports.forEach(r => {
         const div = document.createElement("div");
         div.className = "report-entry";
         div.innerHTML = `
@@ -87,5 +81,6 @@ function fetchReports() {
         `;
         container.appendChild(div);
       });
-    });
+    })
+    .catch(error => console.error("Błąd podczas ładowania raportów:", error));
 }
