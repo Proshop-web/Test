@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>bezpieczni – aktualności</title>
+  <title>Bezpieczni – Newsy</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
@@ -39,49 +39,34 @@
 <body>
   <header>
     <div class="container">
-      <h1>bezpieczni</h1>
+      <h1>Bezpieczni</h1>
       <p>Twoje źródło cyberbezpieczeństwa</p>
     </div>
   </header>
 
   <nav>
-    <button onclick="switchTab('aktualnosci')" class="active">Aktualności</button>
-    <button onclick="switchTab('archiwum')">Archiwum</button>
-    <button onclick="switchTab('narzedzia')">Narzędzia</button>
-    <button onclick="switchTab('poradnik')">Poradnik</button>
-    <button onclick="switchTab('onas')">O nas</button>
+    <button onclick="switchTab('newsy')" class="active">Newsy</button>
+    <button onclick="switchTab('wydarzenia')">Wydarzenia</button>
+    <button onclick="switchTab('raporty')">Raporty</button>
   </nav>
 
   <main class="container">
-    <section id="aktualnosci" class="active">
-      <div class="news-card">
-        <h2>CERT Orange ostrzega przed atakami SMS</h2>
-        <p><strong>Źródło:</strong> CERT Orange | <strong>Data:</strong> 2025-04-22</p>
-        <p>Fałszywe wiadomości SMS podszywają się pod banki. Uważaj na linki i nie podawaj swoich danych.</p>
-        <a href="https://cert.orange.pl/alert" target="_blank">Czytaj więcej</a>
-      </div>
+    <section id="newsy" class="active">
+      <div id="news-container"></div>
     </section>
 
-    <section id="archiwum">
-      <p>Tu w przyszłości pojawi się archiwum newsów.</p>
+    <section id="wydarzenia">
+      <p>Tu możesz dodać zapowiedzi konferencji, szkoleń i innych wydarzeń z branży.</p>
     </section>
 
-    <section id="narzedzia">
-      <p>Tu możesz dodać linki do przydatnych narzędzi.</p>
-    </section>
-
-    <section id="poradnik">
-      <p>Tu pojawią się poradniki i infografiki.</p>
-    </section>
-
-    <section id="onas">
-      <p>Projekt edukacyjny szerzący wiedzę o cyberbezpieczeństwie. Tworzone z pasji.</p>
+    <section id="raporty">
+      <p>Tu możesz dodać zestawienia, analizy lub raporty zagrożeń.</p>
     </section>
   </main>
 
   <footer>
     <div class="container">
-      <p>&copy; 2025 bezpieczni. Projekt edukacyjny z zakresu cyberbezpieczeństwa.</p>
+      <p>&copy; 2025 Bezpieczni. Projekt edukacyjny z zakresu cyberbezpieczeństwa.</p>
     </div>
   </footer>
 
@@ -93,5 +78,6 @@
       document.getElementById(tabId).classList.add("active");
     }
   </script>
+  <script src="main.js"></script>
 </body>
 </html>
