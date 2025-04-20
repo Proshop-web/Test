@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bezpieczni – Newsy</title>
+  <title>Bezpieczni – newsy</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -16,14 +16,14 @@
   </header>
 
   <nav>
-    <a href="newsy.html" class="active">Newsy</a>
+    <a href="newsy.html" class="active">newsy</a>
     <a href="events.html">Wydarzenia</a>
     <a href="reports.html">Raporty</a>
   </nav>
 
   <main class="container">
     <section>
-      <div id="news-container"></div>
+      <div id="newsy-container"></div>
     </section>
   </main>
 
@@ -34,7 +34,7 @@
   </footer>
 
   <script>
-    function fetchNewsyOncePerDay() {
+    function fetchnewsyOncePerDay() {
       const lastLoad = localStorage.getItem("lastnewsyLoad");
       const now = new Date();
       const todayAtFour = new Date();
@@ -43,12 +43,12 @@
       if (!lastLoad || new Date(lastLoad).toDateString() !== now.toDateString() || now > todayAtFour && new Date(lastLoad) < todayAtFour) {
         fetch('data/newsy.json')
           .then(response => response.json())
-          .then(news => {
-            const container = document.getElementById("news-container");
+          .then(newsy => {
+            const container = document.getElementById("newsy-container");
             container.innerHTML = "";
-            news.forEach(item => {
+            newsy.forEach(item => {
               const card = document.createElement("div");
-              card.className = "news-card";
+              card.className = "newsy-card";
               card.innerHTML = `
                 <h2>${item.title}</h2>
                 <p><strong>Źródło:</strong> ${item.source} | <strong>Data:</strong> ${item.date}</p>
@@ -59,11 +59,11 @@
             });
             localStorage.setItem("lastnewsyLoad", now.toISOString());
           })
-          .catch(error => console.error("Błąd podczas wczytywania newsów:", error));
+          .catch(error => console.error("Błąd podczas wczytywania newsyów:", error));
       }
     }
 
-    fetchNewsyOncePerDay();
+    fetchnewsyOncePerDay();
   </script>
 </body>
 </html>
