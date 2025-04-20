@@ -24,7 +24,7 @@
     button:hover { background: #2d863a; }
     .entry { border: 1px solid #3fa34d; border-radius: 4px; padding: 1rem; margin: 1rem 0; background: #1a1a1a; }
     .entry button { background: #8b0000; margin-top: 0.5rem; }
-    #update-info { margin-top: 2rem; color: #aaa; font-size: 0.9rem; text-align: center; }
+    #update-info { margin-top: 1rem; color: #aaa; font-size: 0.9rem; text-align: center; }
     .tabs { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
     .tabs button { background: #333; border: none; padding: 0.5rem 1rem; color: #fff; border-radius: 4px; cursor: pointer; }
     .tabs button.active { background: #3fa34d; }
@@ -57,6 +57,8 @@
       <label>Data</label><input type="date" id="date-news" />
       <button onclick="dodaj('news')">✅ Dodaj</button>
       <button onclick="pobierz('news')">📥 Pobierz newsy.json</button>
+      <button onclick="wymusAktualizacje('news')">🔄 Załaduj teraz</button>
+      <div id="update-news"></div>
       <div id="lista-news"></div>
     </div>
 
@@ -69,6 +71,8 @@
       <label>Link</label><input id="link-event" />
       <button onclick="dodaj('event')">✅ Dodaj</button>
       <button onclick="pobierz('event')">📥 Pobierz events.json</button>
+      <button onclick="wymusAktualizacje('event')">🔄 Załaduj teraz</button>
+      <div id="update-event"></div>
       <div id="lista-events"></div>
     </div>
 
@@ -81,6 +85,8 @@
       <label>Link</label><input id="link-report" />
       <button onclick="dodaj('report')">✅ Dodaj</button>
       <button onclick="pobierz('report')">📥 Pobierz reports.json</button>
+      <button onclick="wymusAktualizacje('report')">🔄 Załaduj teraz</button>
+      <div id="update-report"></div>
       <div id="lista-reports"></div>
     </div>
   </div>
@@ -96,6 +102,9 @@
       if (document.getElementById("pass").value === "shoppro") {
         document.getElementById("login").style.display = "none";
         document.getElementById("panel").style.display = "block";
+        pokazInfo("news");
+        pokazInfo("event");
+        pokazInfo("report");
       } else alert("Błędne hasło");
     }
 
@@ -159,6 +168,24 @@
       link.href = URL.createObjectURL(blob);
       link.download = `${type === 'news' ? 'newsy' : type + 's'}.json`;
       link.click();
+    }
+
+    function wymusAktualizacje(type) {
+      const teraz = new Date();
+      localStorage.setItem(`last${type}Load`, teraz.toISOString());
+      pokazInfo(type);
+      alert(`🟢 Oznaczono ręczne załadowanie ${type === 'news' ? 'newsów' : type + 'ów'}. Odśwież stronę główną, aby zobaczyć efekt.`);
+    }
+
+    function pokazInfo(type) {
+      const zapis = localStorage.getItem(`last${type}Load`);
+      const info = document.getElementById(`update-${type}`);
+      if (zapis) {
+        const data = new Date(zapis);
+        info.textContent = `🕒 Ostatnia aktualizacja: ${data.toLocaleString("pl-PL")}`;
+      } else {
+        info.textContent = "🕒 Brak danych o ostatniej aktualizacji.";
+      }
     }
   </script>
 </body>
