@@ -34,6 +34,36 @@
     section.active {
       display: block;
     }
+    .calendar-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 2rem 0 1rem;
+    }
+    .calendar-month {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .event-entry {
+      background: #1a1a1a;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #38bdf8;
+      border-radius: 8px;
+    }
+    .event-entry h3 {
+      margin: 0;
+      color: #fff;
+    }
+    .event-entry p {
+      margin: 0.3rem 0;
+      color: #ccc;
+    }
+    .event-entry a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -56,7 +86,12 @@
     </section>
 
     <section id="wydarzenia">
-      <p>Tu możesz dodać zapowiedzi konferencji, szkoleń i innych wydarzeń z branży.</p>
+      <div class="calendar-controls">
+        <button onclick="zmienMiesiac(-1)">⬅️ Poprzedni</button>
+        <span id="miesiac-nazwa" class="calendar-month"></span>
+        <button onclick="zmienMiesiac(1)">Następny ➡️</button>
+      </div>
+      <div id="lista-wydarzen"></div>
     </section>
 
     <section id="raporty">
@@ -76,6 +111,42 @@
       document.querySelectorAll("main section").forEach(sec => sec.classList.remove("active"));
       document.querySelector(`nav button[onclick*='${tabId}']`).classList.add("active");
       document.getElementById(tabId).classList.add("active");
+      if (tabId === 'wydarzenia') zaladujWydarzenia();
+    }
+
+    const miesiacePL = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
+    let aktualnyMiesiac = new Date().getMonth();
+    let aktualnyRok = new Date().getFullYear();
+
+    function zmienMiesiac(delta) {
+      aktualnyMiesiac += delta;
+      if (aktualnyMiesiac > 11) { aktualnyMiesiac = 0; aktualnyRok++; }
+      if (aktualnyMiesiac < 0) { aktualnyMiesiac = 11; aktualnyRok--; }
+      zaladujWydarzenia();
+    }
+
+    function zaladujWydarzenia() {
+      document.getElementById("miesiac-nazwa").textContent = `${miesiacePL[aktualnyMiesiac]} ${aktualnyRok}`;
+      fetch('data/events.json')
+        .then(res => res.json())
+        .then(events => {
+          const lista = document.getElementById("lista-wydarzen");
+          lista.innerHTML = "";
+          events.filter(e => {
+            const data = new Date(e.date);
+            return data.getMonth() === aktualnyMiesiac && data.getFullYear() === aktualnyRok;
+          }).forEach(e => {
+            const box = document.createElement("div");
+            box.className = "event-entry";
+            box.innerHTML = `
+              <h3>${e.date} – ${e.title}</h3>
+              <p><strong>Miejsce:</strong> ${e.location}</p>
+              <p>${e.description}</p>
+              <a href="${e.link}" target="_blank">Zobacz</a>
+            `;
+            lista.appendChild(box);
+          });
+        });
     }
   </script>
   <script src="main.js"></script>
