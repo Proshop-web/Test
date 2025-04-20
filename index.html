@@ -3,66 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bezpieczni – Newsy</title>
+  <title>Bezpieczni – Start</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    nav {
+    .link-grid {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      background-color: #1a1a1a;
-      padding: 0.5rem;
-      border-bottom: 1px solid #2a2a2a;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin: 3rem auto;
+      max-width: 400px;
     }
-    nav button {
-      background: none;
-      border: none;
-      color: #ccc;
-      padding: 0.75rem 1rem;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    nav button.active {
-      color: #38bdf8;
-      border-bottom: 2px solid #38bdf8;
-    }
-    section {
-      display: none;
-    }
-    section.active {
+    .link-grid a {
       display: block;
-    }
-    .calendar-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 2rem 0 1rem;
-    }
-    .calendar-month {
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-    .event-entry, .report-entry {
       background: #1a1a1a;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-left: 4px solid #38bdf8;
-      border-radius: 8px;
-    }
-    .event-entry h3, .report-entry h3 {
-      margin: 0;
-      color: #fff;
-    }
-    .event-entry p, .report-entry p {
-      margin: 0.3rem 0;
-      color: #ccc;
-    }
-    .event-entry a, .report-entry a {
       color: #38bdf8;
+      padding: 1rem;
+      text-align: center;
       text-decoration: none;
-      font-weight: bold;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid #2a2a2a;
+      transition: background 0.2s;
+    }
+    .link-grid a:hover {
+      background: #111;
     }
   </style>
 </head>
@@ -74,29 +39,12 @@
     </div>
   </header>
 
-  <nav>
-    <button onclick="switchTab('newsy')" class="active">Newsy</button>
-    <button onclick="switchTab('wydarzenia')">Wydarzenia</button>
-    <button onclick="switchTab('raporty')">Raporty</button>
-  </nav>
-
   <main class="container">
-    <section id="newsy" class="active">
-      <div id="newsy-container"></div>
-    </section>
-
-    <section id="wydarzenia">
-      <div class="calendar-controls">
-        <button onclick="zmienMiesiac(-1)">⬅️ Poprzedni</button>
-        <span id="miesiac-nazwa" class="calendar-month"></span>
-        <button onclick="zmienMiesiac(1)">Następny ➡️</button>
-      </div>
-      <div id="lista-wydarzen"></div>
-    </section>
-
-    <section id="raporty">
-      <div id="raporty-container"></div>
-    </section>
+    <div class="link-grid">
+      <a href="newsy.html">📰 Newsy</a>
+      <a href="events.html">📅 Wydarzenia</a>
+      <a href="reports.html">📊 Raporty</a>
+    </div>
   </main>
 
   <footer>
@@ -104,73 +52,5 @@
       <p>&copy; 2025 Bezpieczni. Projekt edukacyjny z zakresu cyberbezpieczeństwa.</p>
     </div>
   </footer>
-
-  <script>
-    function switchTab(tabId) {
-      document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
-      document.querySelectorAll("main section").forEach(sec => sec.classList.remove("active"));
-      document.querySelector(`nav button[onclick*='${tabId}']`).classList.add("active");
-      document.getElementById(tabId).classList.add("active");
-      if (tabId === 'wydarzenia') zaladujWydarzenia();
-      if (tabId === 'raporty') zaladujRaporty();
-      if (tabId === 'newsy') fetchNewsyOncePerDay();
-    }
-
-    const miesiacePL = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
-    let aktualnyMiesiac = new Date().getMonth();
-    let aktualnyRok = new Date().getFullYear();
-
-    function zmienMiesiac(delta) {
-      aktualnyMiesiac += delta;
-      if (aktualnyMiesiac > 11) { aktualnyMiesiac = 0; aktualnyRok++; }
-      if (aktualnyMiesiac < 0) { aktualnyMiesiac = 11; aktualnyRok--; }
-      zaladujWydarzenia();
-    }
-
-    function zaladujWydarzenia() {
-      document.getElementById("miesiac-nazwa").textContent = `${miesiacePL[aktualnyMiesiac]} ${aktualnyRok}`;
-      fetch('data/events.json')
-        .then(res => res.json())
-        .then(events => {
-          const lista = document.getElementById("lista-wydarzen");
-          lista.innerHTML = "";
-          events.filter(e => {
-            const data = new Date(e.date);
-            return data.getMonth() === aktualnyMiesiac && data.getFullYear() === aktualnyRok;
-          }).forEach(e => {
-            const box = document.createElement("div");
-            box.className = "event-entry";
-            box.innerHTML = `
-              <h3>${e.date} – ${e.title}</h3>
-              <p><strong>Miejsce:</strong> ${e.location}</p>
-              <p>${e.description}</p>
-              <a href="${e.link}" target="_blank">Zobacz</a>
-            `;
-            lista.appendChild(box);
-          });
-        });
-    }
-
-    function zaladujRaporty() {
-      fetch('data/reports.json')
-        .then(res => res.json())
-        .then(raporty => {
-          const container = document.getElementById("raporty-container");
-          container.innerHTML = "";
-          raporty.forEach(r => {
-            const div = document.createElement("div");
-            div.className = "report-entry";
-            div.innerHTML = `
-              <h3>${r.title}</h3>
-              <p><strong>Źródło:</strong> ${r.source} | <strong>Data:</strong> ${r.date}</p>
-              <p>${r.description}</p>
-              <a href="${r.link}" target="_blank">Zobacz raport</a>
-            `;
-            container.appendChild(div);
-          });
-        });
-    }
-  </script>
-  <script src="main.js"></script>
 </body>
 </html>
