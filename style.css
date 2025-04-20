@@ -41,8 +41,8 @@ nav a.active, nav a:hover {
   color: #000;
 }
 
-/* Karty newsów */
-.news-card {
+/* Karty newsyów */
+.newsy-card {
   background: #1a1a1a;
   padding: 1rem;
   margin-bottom: 1.5rem;
@@ -50,17 +50,17 @@ nav a.active, nav a:hover {
   border-radius: 6px;
 }
 
-.news-card h2 {
+.newsy-card h2 {
   margin-top: 0;
   color: #fff;
 }
 
-.news-card p {
+.newsy-card p {
   margin: 0.5rem 0;
   color: #ccc;
 }
 
-.news-card a {
+.newsy-card a {
   color: #38bdf8;
   font-weight: bold;
   text-decoration: none;
