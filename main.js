@@ -2,11 +2,11 @@
 
 const path = window.location.pathname;
 
-if (path.includes("newsy")) fetchNewsy();
+if (path.includes("newsy")) fetchnewsy();
 if (path.includes("events")) fetchEvents();
 if (path.includes("reports")) fetchReports();
 
-function fetchNewsy() {
+function fetchnewsy() {
   const lastLoad = localStorage.getItem("lastnewsyLoad");
   const now = new Date();
   const todayAtFour = new Date();
@@ -15,13 +15,13 @@ function fetchNewsy() {
   if (!lastLoad || new Date(lastLoad).toDateString() !== now.toDateString() || now > todayAtFour && new Date(lastLoad) < todayAtFour) {
     fetch('data/newsy.json')
       .then(response => response.json())
-      .then(news => {
-        const container = document.getElementById("news-container");
+      .then(newsy => {
+        const container = document.getElementById("newsy-container");
         if (!container) return;
         container.innerHTML = "";
-        news.forEach(item => {
+        newsy.forEach(item => {
           const card = document.createElement("div");
-          card.className = "news-card";
+          card.className = "newsy-card";
           card.innerHTML = `
             <h2>${item.title}</h2>
             <p><strong>Źródło:</strong> ${item.source} | <strong>Data:</strong> ${item.date}</p>
@@ -32,7 +32,7 @@ function fetchNewsy() {
         });
         localStorage.setItem("lastnewsyLoad", now.toISOString());
       })
-      .catch(error => console.error("Błąd podczas wczytywania newsów:", error));
+      .catch(error => console.error("Błąd podczas wczytywania newsyów:", error));
   }
 }
 
