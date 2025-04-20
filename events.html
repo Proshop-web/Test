@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bezpieczni – Wydarzenia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Bezpieczni</h1>
+      <p>Twoje źródło cyberbezpieczeństwa</p>
+    </div>
+  </header>
+
+  <nav>
+    <a href="newsy.html">Newsy</a>
+    <a href="events.html" class="active">Wydarzenia</a>
+    <a href="reports.html">Raporty</a>
+  </nav>
+
+  <main class="container">
+    <section>
+      <div class="calendar-controls">
+        <button onclick="zmienMiesiac(-1)">⬅️ Poprzedni</button>
+        <span id="miesiac-nazwa" class="calendar-month"></span>
+        <button onclick="zmienMiesiac(1)">Następny ➡️</button>
+      </div>
+      <div id="lista-wydarzen"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 Bezpieczni. Projekt edukacyjny z zakresu cyberbezpieczeństwa.</p>
+    </div>
+  </footer>
+
+  <script>
+    const miesiacePL = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
+    let aktualnyMiesiac = new Date().getMonth();
+    let aktualnyRok = new Date().getFullYear();
+
+    function zmienMiesiac(delta) {
+      aktualnyMiesiac += delta;
+      if (aktualnyMiesiac > 11) { aktualnyMiesiac = 0; aktualnyRok++; }
+      if (aktualnyMiesiac < 0) { aktualnyMiesiac = 11; aktualnyRok--; }
+      zaladujWydarzenia();
+    }
+
+    function zaladujWydarzenia() {
+      document.getElementById("miesiac-nazwa").textContent = `${miesiacePL[aktualnyMiesiac]} ${aktualnyRok}`;
+      fetch('data/events.json')
+        .then(res => res.json())
+        .then(events => {
+          const lista = document.getElementById("lista-wydarzen");
+          lista.innerHTML = "";
+          events.filter(e => {
+            const data = new Date(e.date);
+            return data.getMonth() === aktualnyMiesiac && data.getFullYear() === aktualnyRok;
+          }).forEach(e => {
+            const box = document.createElement("div");
+            box.className = "event-entry";
+            box.innerHTML = `
+              <h3>${e.date} – ${e.title}</h3>
+              <p><strong>Miejsce:</strong> ${e.location}</p>
+              <p>${e.description}</p>
+              <a href="${e.link}" target="_blank">Zobacz</a>
+            `;
+            lista.appendChild(box);
+          });
+        });
+    }
+
+    zaladujWydarzenia();
+  </script>
+</body>
+</html>
