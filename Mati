@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Admina – bezpieczni</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #eee; padding: 2rem; }
+    h1, h2 { text-align: center; }
+    label { display: block; margin: 1rem 0 0.2rem; }
+    input, textarea, button, select {
+      width: 100%; max-width: 600px;
+      padding: 0.6rem;
+      margin-bottom: 1rem;
+      border: none;
+      border-radius: 4px;
+    }
+    input, textarea, select { background: #222; color: #eee; }
+    button {
+      background: #3fa34d;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover { background: #2d863a; }
+    pre { background: #222; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    .news-entry { border: 1px solid #3fa34d; border-radius: 4px; padding: 1rem; margin: 1rem 0; background: #1a1a1a; }
+    .news-entry button { background: #8b0000; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div id="login">
+    <h2>🔐 Wpisz hasło, aby uzyskać dostęp</h2>
+    <input type="password" id="pass" placeholder="Hasło..." />
+    <button onclick="checkPassword()">Zaloguj</button>
+  </div>
+
+  <div id="panel" style="display:none;">
+    <h1>🛡️ Panel Admina – Dodaj ręcznie news</h1>
+
+    <label for="url">🔗 Link do artykułu</label>
+    <input type="url" id="url" placeholder="Wklej link..." />
+
+    <label for="source">📌 Źródło</label>
+    <input type="text" id="source" placeholder="np. Zaufana Trzecia Strona" />
+
+    <label for="description">📝 Opis / streszczenie</label>
+    <textarea id="description" rows="4" placeholder="Dodaj krótki opis..."></textarea>
+
+    <label for="date">📅 Data</label>
+    <input type="date" id="date" />
+
+    <button onclick="dodajNewsa()">✅ Dodaj do listy</button>
+    <button onclick="pobierzJSON()">📥 Pobierz news.json</button>
+
+    <h2>📃 Aktualna lista newsów:</h2>
+    <div id="lista-newsow"></div>
+  </div>
+
+  <script>
+    let newsy = [];
+
+    function checkPassword() {
+      const pass = document.getElementById("pass").value;
+      if (pass === "shoppro") {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("panel").style.display = "block";
+      } else {
+        alert("Błędne hasło");
+      }
+    }
+
+    async function dodajNewsa() {
+      const url = document.getElementById("url").value;
+      const source = document.getElementById("source").value;
+      const description = document.getElementById("description").value;
+      const date = document.getElementById("date").value;
+
+      let title = "(Nie udało się pobrać tytułu)";
+      try {
+        const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+        const text = await res.text();
+        const match = text.match(/<title>(.*?)<\/title>/i);
+        if (match && match[1]) title = match[1].trim();
+      } catch (e) {
+        console.error("Błąd pobierania tytułu:", e);
+      }
+
+      const nowyNews = { title, link: url, source, date, description };
+      newsy.push(nowyNews);
+      aktualizujListe();
+
+      document.getElementById("url").value = "";
+      document.getElementById("source").value = "";
+      document.getElementById("description").value = "";
+      document.getElementById("date").value = "";
+    }
+
+    function aktualizujListe() {
+      const container = document.getElementById("lista-newsow");
+      container.innerHTML = "";
+
+      newsy.forEach((news, index) => {
+        const div = document.createElement("div");
+        div.className = "news-entry";
+        div.innerHTML = `
+          <strong>${news.title}</strong><br />
+          <em>${news.source} | ${news.date}</em><br />
+          <p>${news.description}</p>
+          <button onclick="usunNewsa(${index})">Usuń</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function usunNewsa(index) {
+      newsy.splice(index, 1);
+      aktualizujListe();
+    }
+
+    function pobierzJSON() {
+      const blob = new Blob([JSON.stringify(newsy, null, 2)], { type: "application/json" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "news.json";
+      link.click();
+    }
+  </script>
+</body>
+</html>
