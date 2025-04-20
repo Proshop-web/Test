@@ -10,6 +10,7 @@ fetch('data/news.json')
       card.innerHTML = `
         <h2>${item.title}</h2>
         <p><strong>Źródło:</strong> ${item.source} | <strong>Data:</strong> ${item.date}</p>
+        ${item.description ? `<p>${item.description}</p>` : ""}
         <a href="${item.link}" target="_blank">Czytaj więcej</a>
       `;
 
