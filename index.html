@@ -44,22 +44,22 @@
       font-size: 1.2rem;
       font-weight: bold;
     }
-    .event-entry {
+    .event-entry, .report-entry {
       background: #1a1a1a;
       padding: 1rem;
       margin-bottom: 1rem;
       border-left: 4px solid #38bdf8;
       border-radius: 8px;
     }
-    .event-entry h3 {
+    .event-entry h3, .report-entry h3 {
       margin: 0;
       color: #fff;
     }
-    .event-entry p {
+    .event-entry p, .report-entry p {
       margin: 0.3rem 0;
       color: #ccc;
     }
-    .event-entry a {
+    .event-entry a, .report-entry a {
       color: #38bdf8;
       text-decoration: none;
       font-weight: bold;
@@ -95,7 +95,7 @@
     </section>
 
     <section id="raporty">
-      <p>Tu możesz dodać zestawienia, analizy lub raporty zagrożeń.</p>
+      <div id="raporty-container"></div>
     </section>
   </main>
 
@@ -112,6 +112,8 @@
       document.querySelector(`nav button[onclick*='${tabId}']`).classList.add("active");
       document.getElementById(tabId).classList.add("active");
       if (tabId === 'wydarzenia') zaladujWydarzenia();
+      if (tabId === 'raporty') zaladujRaporty();
+      if (tabId === 'newsy') fetchNewsOncePerDay();
     }
 
     const miesiacePL = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
@@ -145,6 +147,26 @@
               <a href="${e.link}" target="_blank">Zobacz</a>
             `;
             lista.appendChild(box);
+          });
+        });
+    }
+
+    function zaladujRaporty() {
+      fetch('data/reports.json')
+        .then(res => res.json())
+        .then(raporty => {
+          const container = document.getElementById("raporty-container");
+          container.innerHTML = "";
+          raporty.forEach(r => {
+            const div = document.createElement("div");
+            div.className = "report-entry";
+            div.innerHTML = `
+              <h3>${r.title}</h3>
+              <p><strong>Źródło:</strong> ${r.source} | <strong>Data:</strong> ${r.date}</p>
+              <p>${r.description}</p>
+              <a href="${r.link}" target="_blank">Zobacz raport</a>
+            `;
+            container.appendChild(div);
           });
         });
     }
