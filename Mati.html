@@ -37,6 +37,9 @@
   <div id="panel" style="display:none;">
     <h1>🛡️ Panel Admina – Dodaj ręcznie news</h1>
 
+    <label for="title">✏️ Tytuł artykułu</label>
+    <input type="text" id="title" placeholder="Wpisz tytuł..." />
+
     <label for="url">🔗 Link do artykułu</label>
     <input type="url" id="url" placeholder="Wklej link..." />
 
@@ -69,26 +72,18 @@
       }
     }
 
-    async function dodajNewsa() {
+    function dodajNewsa() {
+      const title = document.getElementById("title").value;
       const url = document.getElementById("url").value;
       const source = document.getElementById("source").value;
       const description = document.getElementById("description").value;
       const date = document.getElementById("date").value;
 
-      let title = "(Nie udało się pobrać tytułu)";
-      try {
-        const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
-        const text = await res.text();
-        const match = text.match(/<title>(.*?)<\/title>/i);
-        if (match && match[1]) title = match[1].trim();
-      } catch (e) {
-        console.error("Błąd pobierania tytułu:", e);
-      }
-
       const nowyNews = { title, link: url, source, date, description };
       newsy.push(nowyNews);
       aktualizujListe();
 
+      document.getElementById("title").value = "";
       document.getElementById("url").value = "";
       document.getElementById("source").value = "";
       document.getElementById("description").value = "";
