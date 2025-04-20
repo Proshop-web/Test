@@ -43,23 +43,23 @@
     <h1>🛡️ Panel Admina – Bezpieczni</h1>
 
     <div class="tabs">
-      <button onclick="switchTab('newsy')" class="active">Newsy</button>
+      <button onclick="switchTab('newsyy')" class="active">newsyy</button>
       <button onclick="switchTab('wydarzenia')">Wydarzenia</button>
       <button onclick="switchTab('raporty')">Raporty</button>
     </div>
 
-    <div id="newsy" class="tab active">
-      <h2>📰 Dodaj newsy</h2>
-      <label>Tytuł</label><input id="title-newsy" />
-      <label>Link</label><input id="link-newsy" />
-      <label>Źródło</label><input id="source-newsy" />
-      <label>Opis</label><textarea id="desc-newsy"></textarea>
-      <label>Data</label><input type="date" id="date-news" />
-      <button onclick="dodaj('newsy')">✅ Dodaj</button>
-      <button onclick="pobierz('newsy')">📥 Pobierz newsy.json</button>
-      <button onclick="wymusAktualizacje('news')">🔄 Załaduj teraz</button>
-      <div id="update-newsy"></div>
-      <div id="lista-news"></div>
+    <div id="newsyy" class="tab active">
+      <h2>📰 Dodaj newsyy</h2>
+      <label>Tytuł</label><input id="title-newsyy" />
+      <label>Link</label><input id="link-newsyy" />
+      <label>Źródło</label><input id="source-newsyy" />
+      <label>Opis</label><textarea id="desc-newsyy"></textarea>
+      <label>Data</label><input type="date" id="date-newsy" />
+      <button onclick="dodaj('newsyy')">✅ Dodaj</button>
+      <button onclick="pobierz('newsyy')">📥 Pobierz newsyy.json</button>
+      <button onclick="wymusAktualizacje('newsy')">🔄 Załaduj teraz</button>
+      <div id="update-newsyy"></div>
+      <div id="lista-newsy"></div>
     </div>
 
     <div id="wydarzenia" class="tab">
@@ -93,7 +93,7 @@
 
   <script>
     const dane = {
-      news: [],
+      newsy: [],
       event: [],
       report: []
     };
@@ -102,7 +102,7 @@
       if (document.getElementById("pass").value === "shoppro") {
         document.getElementById("login").style.display = "none";
         document.getElementById("panel").style.display = "block";
-        pokazInfo("news");
+        pokazInfo("newsy");
         pokazInfo("event");
         pokazInfo("report");
       } else alert("Błędne hasło");
@@ -117,13 +117,13 @@
 
     function dodaj(type) {
       let entry;
-      if (type === 'news') {
+      if (type === 'newsy') {
         entry = {
-          title: document.getElementById("title-news").value,
-          link: document.getElementById("link-news").value,
-          source: document.getElementById("source-news").value,
-          description: document.getElementById("desc-news").value,
-          date: document.getElementById("date-news").value
+          title: document.getElementById("title-newsy").value,
+          link: document.getElementById("link-newsy").value,
+          source: document.getElementById("source-newsy").value,
+          description: document.getElementById("desc-newsy").value,
+          date: document.getElementById("date-newsy").value
         };
       } else if (type === 'event') {
         entry = {
@@ -166,7 +166,7 @@
       const blob = new Blob([JSON.stringify(dane[type], null, 2)], { type: "application/json" });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = `${type === 'news' ? 'newsy' : type + 's'}.json`;
+      link.download = `${type === 'newsy' ? 'newsyy' : type + 's'}.json`;
       link.click();
     }
 
@@ -174,7 +174,7 @@
       const teraz = new Date();
       localStorage.setItem(`last${type}Load`, teraz.toISOString());
       pokazInfo(type);
-      alert(`🟢 Oznaczono ręczne załadowanie ${type === 'news' ? 'newsów' : type + 'ów'}. Odśwież stronę główną, aby zobaczyć efekt.`);
+      alert(`🟢 Oznaczono ręczne załadowanie ${type === 'newsy' ? 'newsyów' : type + 'ów'}. Odśwież stronę główną, aby zobaczyć efekt.`);
     }
 
     function pokazInfo(type) {
