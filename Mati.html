@@ -43,22 +43,22 @@
     <h1>🛡️ Panel Admina – Bezpieczni</h1>
 
     <div class="tabs">
-      <button onclick="switchTab('news')" class="active">news</button>
+      <button onclick="switchTab('newsy')" class="active">newsy</button>
       <button onclick="switchTab('wydarzenia')">Wydarzenia</button>
       <button onclick="switchTab('raporty')">Raporty</button>
     </div>
 
-    <div id="news" class="tab active">
-      <h2>📰 Dodaj news</h2>
-      <label>Tytuł</label><input id="title-news" />
-      <label>Link</label><input id="link-news" />
-      <label>Źródło</label><input id="source-news" />
-      <label>Opis</label><textarea id="desc-news"></textarea>
+    <div id="newsy" class="tab active">
+      <h2>📰 Dodaj newsy</h2>
+      <label>Tytuł</label><input id="title-newsy" />
+      <label>Link</label><input id="link-newsy" />
+      <label>Źródło</label><input id="source-newsy" />
+      <label>Opis</label><textarea id="desc-newsy"></textarea>
       <label>Data</label><input type="date" id="date-newsy" />
-      <button onclick="dodaj('news')">✅ Dodaj</button>
-      <button onclick="pobierz('news')">📥 Pobierz news.json</button>
+      <button onclick="dodaj('newsy')">✅ Dodaj</button>
+      <button onclick="pobierz('newsy')">📥 Pobierz newsy.json</button>
       <button onclick="wymusAktualizacje('newsy')">🔄 Załaduj teraz</button>
-      <div id="update-news"></div>
+      <div id="update-newsy"></div>
       <div id="lista-newsy"></div>
     </div>
 
@@ -166,7 +166,7 @@
       const blob = new Blob([JSON.stringify(dane[type], null, 2)], { type: "application/json" });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = `${type === 'newsy' ? 'news' : type + 's'}.json`;
+      link.download = `${type === 'newsy' ? 'newsy' : type + 's'}.json`;
       link.click();
     }
 
